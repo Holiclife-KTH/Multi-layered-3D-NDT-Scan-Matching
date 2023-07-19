@@ -1,0 +1,101 @@
+<launch>
+    <!-- tf -->
+    <node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map 10" />
+
+    <arg name="tf_x" default="0.0"/>
+    <arg name="tf_y" default="0.0"/>
+    <arg name="tf_z" default="0.0"/>
+    <arg name="tf_yaw" default="3.14"/>
+    <arg name="tf_pitch" default="0.0"/>
+    <arg name="tf_roll" default="0.0"/>
+    <arg name="frame_id" default="chassis_link"/>
+    <arg name="child_frame_id" default="chassis_link"/>
+    <arg name="period_in_ms" default="5"/>
+    <arg name="multi_layered_scan" default="true"/>
+
+
+    <!-- ======================================points_map_loader============================================== -->
+    <arg name="scene_num" default="noupdate"/>
+    <arg name="path_area_list" default='""'/>
+    <arg name="path_pcd" default='/home/haneul/catkin_ws/src/map/230512map/GlobalMap.pcd'/>
+
+
+    <node pkg="map_file" type="points_map_loader" name="points_map_loader" output="screen">
+        <rosparam subst_value="true">
+            area: $(arg scene_num)
+            arealist_path: $(arg path_area_list)
+            pcd_paths: [ $(arg path_pcd) ]
+        </rosparam>
+    </node>
+
+       
+    <node pkg="isaac_sim_pointcloud_tool" type="points_converter" name="isaac_to_ros"/>
+
+    <node pkg="ZW_ScanMatching" type="lineExtraction.py" name="lineExtraction"/>
+
+    <node pkg="ZW_ScanMatching" type="lidarROI" name="lidarroi"/>
+
+    <node pkg="pcd_clustering" type="clustering_ml" name="clustering_ml" output="screen"/>
+
+     <!-- ====================================== voxel_grid_filter ================================================== -->
+
+    <arg name="sync" default="false" />
+    <arg name="node_name" default="voxel_grid_filter" />
+    <arg name="points_topic" default="/rejected_layer_points" />
+    <arg name="output_log" default="false" />
+    <arg name="measurement_range" default="200" />
+    <arg name="voxel_size" default="1.0"/>
+
+    <node pkg="points_downsampler" name="$(arg node_name)" type="$(arg node_name)">
+        <param name="points_topic" value="$(arg points_topic)" />
+        <remap from="/points_raw" to="/sync_drivers/points_raw" if="$(arg sync)" />
+        <param name="output_log" value="$(arg output_log)" />
+        <param name="measurement_range" value="$(arg measurement_range)" />
+        <param name="voxel_size" value="$(arg voxel_size)"/>
+        <param name="multi_layered_scan" value="$(arg multi_layered_scan)" />
+    </node>
+
+
+    <!-- ===========================================NDT Matching================================================ -->
+    <arg name="method_type" default="1" /> <!-- pcl_generic=0, pcl_anh=1, pcl_anh_gpu=2, pcl_openmp=3 -->
+    <arg name="use_gnss" default="0" />
+    <arg name="use_odom" default="false" />
+    <arg name="use_imu" default="false" />
+    <arg name="imu_upside_down" default="false" />
+    <arg name="imu_topic" default="/imu" />
+    <arg name="queue_size" default="1" />
+    <arg name="offset" default="linear" />
+    <arg name="get_height" default="false" />
+    <arg name="use_local_transform" default="false" />
+    <arg name="output_log_data" default="false" />
+    <arg name="output_tf_frame_id" default="chassis_link"/>
+  <!-- tf -->
+    <param name="tf_x" value="$(arg tf_x)" />
+    <param name="tf_y" value="$(arg tf_y)" />
+    <param name="tf_z" value="$(arg tf_z)" />
+    <param name="tf_roll" value="$(arg tf_roll)" />
+    <param name="tf_pitch" value="$(arg tf_pitch)" />
+    <param name="tf_yaw" value="$(arg tf_yaw)" />
+    <param name="localizer" value="VLP16"/>
+  
+    <node pkg="ndt_matching" type="ndt_matching_ml" name="ndt_matching_ml" output="screen">
+        <param name="method_type" value="$(arg method_type)" />
+        <param name="use_gnss" value="$(arg use_gnss)" />
+        <param name="use_odom" value="$(arg use_odom)" />
+        <param name="use_imu" value="$(arg use_imu)" />
+        <param name="imu_upside_down" value="$(arg imu_upside_down)" />
+        <param name="imu_topic" value="$(arg imu_topic)" />
+        <param name="queue_size" value="$(arg queue_size)" />
+        <param name="offset" value="$(arg offset)" />
+        <param name="get_height" value="$(arg get_height)" />
+        <param name="use_local_transform" value="$(arg use_local_transform)" />
+        <param name="output_log_data" value="$(arg output_log_data)" />
+        <param name="output_tf_frame_id" value="$(arg output_tf_frame_id)" />
+        <param name="map_param" value="/points_map" />
+        <remap from="/points_raw" to="/sync_drivers/points_raw" if="$(arg sync)" />
+
+    </node>
+
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find ZW_ScanMatching)/config/layer_fusion.rviz"/>
+
+</launch>

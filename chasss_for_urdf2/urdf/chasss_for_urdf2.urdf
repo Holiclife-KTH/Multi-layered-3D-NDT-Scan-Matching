@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="chasss_for_urdf2">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="0.424246381723798 7.26072109839669E-18 0.0774205516587396"
+        rpy="0 0 0" />
+      <mass
+        value="12.3300111872581" />
+      <inertia
+        ixx="0.0159928080466918"
+        ixy="1.46672815273748E-17"
+        ixz="-2.6773615291326E-05"
+        iyy="0.247227904954156"
+        iyz="-3.56992997544759E-19"
+        izz="0.246166478854635" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chasss_for_urdf2/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chasss_for_urdf2/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Look_up_LiDAR_Link">
+    <inertial>
+      <origin
+        xyz="-0.0422047849945084 -2.58011587595808E-06 -0.00194447493412397"
+        rpy="0 0 0" />
+      <mass
+        value="0.585082164665025" />
+      <inertia
+        ixx="0.000629066968767259"
+        ixy="1.14082008003088E-10"
+        ixz="6.84751337082159E-08"
+        iyy="0.000630263933919505"
+        iyz="-5.00486006264996E-08"
+        izz="0.000749251783633221" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chasss_for_urdf2/meshes/Look_up_LiDAR_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chasss_for_urdf2/meshes/Look_up_LiDAR_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Look_up_LiDAR_Joint"
+    type="fixed">
+    <origin
+      xyz="0.78396 0 0.22771"
+      rpy="0 -0.2618 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Look_up_LiDAR_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Look_forward_LiDAR_Link">
+    <inertial>
+      <origin
+        xyz="-0.0422047844576808 -2.58019387493601E-06 -0.00194447423478739"
+        rpy="0 0 0" />
+      <mass
+        value="0.585082152494289" />
+      <inertia
+        ixx="0.000629066957622612"
+        ixy="1.1260064667654E-10"
+        ixz="6.84879643021242E-08"
+        iyy="0.000630263912705768"
+        iyz="-5.00502875847165E-08"
+        izz="0.000749251773722337" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chasss_for_urdf2/meshes/Look_forward_LiDAR_Link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://chasss_for_urdf2/meshes/Look_forward_LiDAR_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Look_forward_LiDAR_joint"
+    type="fixed">
+    <origin
+      xyz="0.79891 0 0.071719"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Look_forward_LiDAR_Link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

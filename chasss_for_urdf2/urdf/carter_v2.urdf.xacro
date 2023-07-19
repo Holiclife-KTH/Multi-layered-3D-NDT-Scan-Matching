@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro= "http://wiki.ros.org/xacro" name="carter_v2">
+    <xacro:include filename="$(find chasss_for_urdf2)/urdf/carter/urdf/carter.urdf.xacro"/>
+    <xacro:include filename="$(find chasss_for_urdf2)/urdf/chassis_for_urdf.xacro"/>
+
+    <joint name="root_joint" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="chassis_base_link"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <axis xyz="0 0 0" />
+    </joint>
+</robot>
