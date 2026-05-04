@@ -7,6 +7,7 @@ from ZW_ScanMatching.srv import ObstacleLayoutRequest
 from std_msgs.msg import Empty
 import time
 from geometry_msgs.msg import Pose, PoseStamped, PoseWithCovarianceStamped, Twist
+from autoware_msgs.msg import NDTStat
 from tf2_msgs.msg import TFMessage
 import openpyxl
 import csv
@@ -29,28 +30,25 @@ def main():
  
     pub2 = rospy.Publisher("/initialpose", PoseWithCovarianceStamped, queue_size=1)
     pub3 = rospy.Publisher("/trans", Empty, queue_size=1)
-    pub4 = rospy.Publisher("/trans2", Empty, queue_size=1)
     A_pose = Pose()
-    B_pose = Pose()
     MSG2 = Empty()
-    MSG3 = Empty()
     
     teleport_msg = ObstacleLayoutRequest()
-    teleport_msg.names = ["/World/Object1"]
+    teleport_msg.names = ["/World/object"]
 
     pose = PoseWithCovarianceStamped()
-    pose.pose.pose.position.x = -0.247 #-8.34, -4.2433
-    pose.pose.pose.position.y = 0.0 #5.98, 6.0
-    pose.pose.pose.position.z = -0.45
+    pose.pose.pose.position.x = -8.0 #-8.34, -4.2433
+    pose.pose.pose.position.y = 6.0 #5.98, 6.0
+    pose.pose.pose.position.z = 0.0
     pose.pose.pose.orientation.x = 0.0
     pose.pose.pose.orientation.y  = 0.0
-    pose.pose.pose.orientation.z  = 0.0
-    pose.pose.pose.orientation.w = 1.0
+    pose.pose.pose.orientation.z  = 0.707
+    pose.pose.pose.orientation.w = 0.707
     pose.header.frame_id="map"
     
 
     cmd_vel = Twist()
-    cmd_vel.linear.x = 0.0
+    cmd_vel.linear.x = 3.0
     cmd_vel.linear.y = 0.0
     cmd_vel.linear.z = 0.0
 
@@ -69,26 +67,24 @@ def main():
             # pub.publish(cmd_vel)
             
             pub3.publish(MSG2)
-            time.sleep(7)
+            time.sleep(1)
             
-            for i in range(2):
+            for i in range(6):
                 
-                A_pose.position.x = -8.0 + i * 0.7
-                A_pose.position.y = 12.5 - i
+                A_pose.position.x = -9.0 
+                np.random.seed(6+i)
+                A_pose.position.y = 12.0 + i
                 A_pose.position.z = 0.0
              
-                A_pose.orientation.w = 1.0
+                A_pose.orientation.w = 1
                 A_pose.orientation.x = 0
                 A_pose.orientation.y = 0
-                A_pose.orientation.z = 0.0
-
-            
+                A_pose.orientation.z = 0
 
                
                 teleport_msg.poses = [A_pose]
                 teleport_client(teleport_msg)
-                pub4.publish(MSG3)
-                time.sleep(7)
+                time.sleep(2)
             
             A_pose.position.x = -9.0 # -10.5 / -9.8
             A_pose.position.y = 3.0  # 11.1 / 10.1
@@ -100,15 +96,13 @@ def main():
             A_pose.orientation.y = 0
             A_pose.orientation.z = 0
 
-
             
             
 
             teleport_msg.poses = [A_pose]
             teleport_client(teleport_msg)
-            pub4.publish(MSG3)
 
-            
+            pub3.publish(MSG2)
         
 
         elif Key == "q" or Key=="Q":

@@ -7,6 +7,7 @@ from sensor_msgs.msg import Image, PointCloud2
 from cv_bridge import CvBridge, CvBridgeError
 import time
 import math as m
+import pcl
 from sensor_msgs import point_cloud2
 from ZW_ScanMatching.msg import plane, Coordinate
 

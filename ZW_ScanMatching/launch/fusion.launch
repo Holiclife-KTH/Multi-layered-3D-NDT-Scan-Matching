@@ -17,7 +17,7 @@
     <!-- ======================================points_map_loader============================================== -->
     <arg name="scene_num" default="noupdate"/>
     <arg name="path_area_list" default='""'/>
-    <arg name="path_pcd" default='/home/haneul/catkin_ws/src/map/230512map/GlobalMap.pcd'/>
+    <arg name="path_pcd" default='/home/irol/ZW_ws/src/map/230512map/GlobalMap.pcd'/>
 
 
     <node pkg="map_file" type="points_map_loader" name="points_map_loader" output="screen">

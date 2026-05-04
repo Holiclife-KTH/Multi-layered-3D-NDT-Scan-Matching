@@ -99,29 +99,10 @@ void Clustering::rawPointcallback(const sensor_msgs::PointCloud2& point2){
     pcl::PassThrough<pcl::PointXYZI> pass2;
     pass2.setInputCloud(raw_pcl_cloud);
     pass2.setFilterFieldName("z");
-    if (maxPt.z < -100){
-        pcl::toPCLPointCloud2(*raw_pcl_cloud, ndt_cloud); 
-    }
-    else{
+    pass2.setFilterLimits(maxPt.z, 6);
+    pass2.filter (*rejected_Points);
 
-        for (int point_id = 0; point_id < raw_pcl_cloud->points.size(); ++point_id) {
-        if((((raw_pcl_cloud->points[point_id].y) < 1.6)&&((raw_pcl_cloud->points[point_id].y)> -1.6)) && (raw_pcl_cloud->points[point_id].z < (maxPt.z+0.5))){
-            raw_pcl_cloud->points[point_id].x = 0;
-            raw_pcl_cloud->points[point_id].y = 0;
-            raw_pcl_cloud->points[point_id].z = 0;
-        }    
-    }
-
-    pcl::toPCLPointCloud2(*raw_pcl_cloud, ndt_cloud); 
-        // std::cout<<maxPt.z<<std::endl;
-        // pass2.setFilterLimits(maxPt.z, 7.0);
-        // pass2.filter(*rejected_Points);
-        // pcl::toPCLPointCloud2(*rejected_Points, ndt_cloud); 
-    }
-    
-    
-
-     
+    pcl::toPCLPointCloud2(*rejected_Points, ndt_cloud);  
     sensor_msgs::PointCloud2 output2;
     pcl_conversions::fromPCL(ndt_cloud, output2);
     output2.header.frame_id = point2.header.frame_id;
@@ -151,10 +132,10 @@ void Clustering::Pointcallback(const sensor_msgs::PointCloud2& point)
     pass.filter (*filtered_Points);
 
     pcl::PassThrough<pcl::PointXYZ> x_pass;
-    x_pass.setInputCloud(filtered_Points);
-    x_pass.setFilterFieldName("x");
-    x_pass.setFilterLimits(0.0, 15.0);
-    x_pass.filter (*filtered_Points2);
+    pass.setInputCloud(filtered_Points);
+    pass.setFilterFieldName("x");
+    pass.setFilterLimits(0.0, 10.0);
+    pass.filter (*filtered_Points2);
 
     //Voxelization
     pcl::VoxelGrid<pcl::PointXYZ> vg;
@@ -168,9 +149,9 @@ void Clustering::Pointcallback(const sensor_msgs::PointCloud2& point)
 
     std::vector<pcl::PointIndices> cluster_indices;
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-    ec.setClusterTolerance (0.5); // 포인트와 포인트 간의 간격 -> 1m
+    ec.setClusterTolerance (1); // 포인트와 포인트 간의 간격 -> 1m
     ec.setMinClusterSize (4);   // 한 군집의 최소 포인트 개수
-    ec.setMaxClusterSize (400);  // 한 군집의 최대 포인트 개수
+    ec.setMaxClusterSize (50);  // 한 군집의 최대 포인트 개수
     ec.setSearchMethod (tree);  // 검색 방법: tree
     ec.setInputCloud (cloud_filtered_v2); // cloud_filtered_v2에 클러스터링 결과를 입력
     ec.extract (cluster_indices);

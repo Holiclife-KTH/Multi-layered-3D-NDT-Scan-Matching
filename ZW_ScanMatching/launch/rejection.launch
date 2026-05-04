@@ -1,6 +1,6 @@
 <launch>
     <!-- tf -->
-    <node pkg="tf" type="static_transform_publisher" name="world_to_map" args="-8.0 6.0 0 1.57 0 0 /world /map 10" />
+    <node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0.249 0 0.0 0 0 0 /world /map 10" />
 
     <arg name="tf_x" default="0.0"/>
     <arg name="tf_y" default="0.0"/>
@@ -17,7 +17,7 @@
     <!-- ======================================points_map_loader============================================== -->
     <arg name="scene_num" default="noupdate"/>
     <arg name="path_area_list" default='""'/>
-    <arg name="path_pcd" default='/home/haneul/catkin_ws/src/map/230523map/230523_64ch_map/GlobalMap.pcd'/>
+    <arg name="path_pcd" default='/home/irol/ZW_ws/src/map/230512map/GlobalMap.pcd'/>
 
 
 
@@ -41,7 +41,7 @@
 
     <!-- ================================== Method ====================================== -->
 
-    <!-- <node pkg="ZW_ScanMatching" type="lineExtraction.py" name="lineExtraction"/> -->
+    <node pkg="ZW_ScanMatching" type="lineExtraction.py" name="lineExtraction"/>
 
     <node pkg="ZW_ScanMatching" type="lidarROI" name="lidarroi"/>
 
@@ -54,7 +54,7 @@
     <arg name="points_topic" default="/rejected_layer_points" />
     <arg name="output_log" default="false" />
     <arg name="measurement_range" default="200" />
-    <arg name="voxel_size" default="0.2"/>
+    <arg name="voxel_size" default="1.0"/>
     <arg name="multi_layered_scan" default="false"/>
 
     <node pkg="points_downsampler" name="$(arg node_name)" type="$(arg node_name)">

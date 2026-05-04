@@ -9,7 +9,6 @@
 //ros library
 #include <sensor_msgs/PointCloud2.h>
 #include <pcl_ros/point_cloud.h>
-#include <std_msgs/Float32.h>
 
 //pcl library
 #include <pcl/point_cloud.h>
@@ -58,7 +57,6 @@ class Clustering{
         pcl::PCLPointCloud2 top_cloud;
         pcl::PCLPointCloud2 bottom_cloud;
         pcl::PointXYZI minPt, maxPt;
-        std_msgs::Float32 height_msg;
         
     private:
         // Callback function for processing incoming point cloud data
@@ -72,10 +70,6 @@ class Clustering{
         ros::Publisher pub;
         ros::Publisher pub2;
         ros::Publisher pub3;
-        ros::Publisher pub4;
-
-        float lowerBoundary = 0.0;
-        float upperBoundary = 0.0;
 };
 
 
@@ -89,10 +83,6 @@ void Clustering::initClustering(ros::NodeHandle& nh){
     pub = node.advertise<sensor_msgs::PointCloud2> ("/clustered_points", 100);
     pub2 = node.advertise<sensor_msgs::PointCloud2> ("/top_layer_points", 100);
     pub3 = node.advertise<sensor_msgs::PointCloud2> ("/bottom_layer_points", 100);
-    pub4 = node.advertise<std_msgs::Float32> ("/object_height", 10);
-
-    node.getParam("setSourceLowerBound", lowerBoundary);
-    node.getParam("setSourceUpperBound", upperBoundary);
 
 }
 
@@ -106,32 +96,18 @@ void Clustering::rawPointcallback(const sensor_msgs::PointCloud2& point2){
     pcl::PassThrough<pcl::PointXYZI> pass2;
     pcl::PassThrough<pcl::PointXYZI> pass3;
 
-    if (maxPt.z < -100){
-        pass2.setInputCloud(raw_pcl_cloud);
-        pass2.setFilterFieldName("z");
-        pass2.setFilterLimits(upperBoundary, 2.0);
-        pass2.filter(*top_Points);
+    pass2.setInputCloud(raw_pcl_cloud);
+    pass2.setFilterFieldName("z");
+    pass2.setFilterLimits(maxPt.z, 6);
+    pass2.filter(*top_Points);
 
-        pass3.setInputCloud(raw_pcl_cloud);
-        pass3.setFilterFieldName("z");
-        pass3.setFilterLimits(lowerBoundary, upperBoundary);
-        pass3.filter(*bottom_Points);
-    }
-
-    else
-    {
-        pass2.setInputCloud(raw_pcl_cloud);
-        pass2.setFilterFieldName("z");
-        pass2.setFilterLimits(maxPt.z, 2.0);
-        pass2.filter(*top_Points);
-
-        pass3.setInputCloud(raw_pcl_cloud);
-        pass3.setFilterFieldName("z");
-        pass3.setFilterLimits(-0.9867, maxPt.z);
-        pass3.filter(*bottom_Points);
+    pass3.setInputCloud(raw_pcl_cloud);
+    pass3.setFilterFieldName("z");
+    pass3.setFilterLimits(-0.48, maxPt.z);
+    pass3.filter(*bottom_Points);
     
-    }
-    
+
+
 
     pcl::toPCLPointCloud2(*top_Points, top_cloud);  
     pcl::toPCLPointCloud2(*bottom_Points, bottom_cloud);
@@ -146,11 +122,6 @@ void Clustering::rawPointcallback(const sensor_msgs::PointCloud2& point2){
     bottom_pcd_msg.header.stamp = ros::Time::now();
     pub2.publish(top_pcd_msg);
     pub3.publish(bottom_pcd_msg);
-
-    height_msg.data = maxPt.z;
-
-    
-    pub4.publish(height_msg);
 
 }
 
@@ -167,13 +138,13 @@ void Clustering::Pointcallback(const sensor_msgs::PointCloud2& point)
     pcl::PassThrough<pcl::PointXYZ> pass;
     pass.setInputCloud(cloud);
     pass.setFilterFieldName("z");
-    pass.setFilterLimits(-0.9867, 5.2);
+    pass.setFilterLimits(-0.48, 5.2);
     pass.filter (*filtered_Points);
 
     //Voxelization
     pcl::VoxelGrid<pcl::PointXYZ> vg;
     vg.setInputCloud(filtered_Points);
-    vg.setLeafSize(0.4f, 0.4f, 0.4f);
+    vg.setLeafSize(0.2f, 0.2f, 0.2f);
     vg.filter(*cloud_filtered_v2);
 
     //Creating the KdTree objectr for the search method of the extraction
@@ -184,7 +155,7 @@ void Clustering::Pointcallback(const sensor_msgs::PointCloud2& point)
     pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
     ec.setClusterTolerance (1); // 포인트와 포인트 간의 간격 -> 1m
     ec.setMinClusterSize (4);   // 한 군집의 최소 포인트 개수
-    ec.setMaxClusterSize (20);  // 한 군집의 최대 포인트 개수
+    ec.setMaxClusterSize (50);  // 한 군집의 최대 포인트 개수
     ec.setSearchMethod (tree);  // 검색 방법: tree
     ec.setInputCloud (cloud_filtered_v2); // cloud_filtered_v2에 클러스터링 결과를 입력
     ec.extract (cluster_indices);
@@ -221,7 +192,7 @@ int main(int argc, char** argv)
 {
     ros::init(argc, argv, "Clustering");
     ros::NodeHandle node("~");
-    std::cout<< "Start node for clustering......" << std::endl;
+    std::cout<< "Start node to clustering......" << std::endl;
     Clustering::Ptr clusteringPtr;
     clusteringPtr.reset(new Clustering);
     clusteringPtr->initClustering(node);

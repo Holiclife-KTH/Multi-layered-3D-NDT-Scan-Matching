@@ -88,22 +88,13 @@ void LiDARROI::Pointcallback(const sensor_msgs::PointCloud2& points){
     PointCloud::Ptr input_ptr(new PointCloud());
     pcl::fromPCLPointCloud2(pcl_pc, *input_ptr);
 
-    // for (int point_id = 0; point_id < input_ptr->points.size(); ++point_id) {
-    //     if((((input_ptr->points[point_id].x)*r_result.first + r_result.second + 0.35 - input_ptr->points[point_id].y)> 0)||(((input_ptr->points[point_id].x)*l_result.first + l_result.second - 0.35 - input_ptr->points[point_id].y)< 0)){
-    //         input_ptr->points[point_id].x = 0;
-    //         input_ptr->points[point_id].y = 0;
-    //         input_ptr->points[point_id].z = 0;
-    //     }    
-    // }
-
     for (int point_id = 0; point_id < input_ptr->points.size(); ++point_id) {
-        if(((input_ptr->points[point_id].y)> 1.7)||((input_ptr->points[point_id].y)< -1.7)){
+        if((((input_ptr->points[point_id].x)*r_result.first + r_result.second + 0.35 - input_ptr->points[point_id].y)> 0)||(((input_ptr->points[point_id].x)*l_result.first + l_result.second - 0.35 - input_ptr->points[point_id].y)< 0)){
             input_ptr->points[point_id].x = 0;
             input_ptr->points[point_id].y = 0;
             input_ptr->points[point_id].z = 0;
         }    
     }
-
 
     pcl::toPCLPointCloud2(*input_ptr, pcl_pcd);
     sensor_msgs::PointCloud2 ROI_output;

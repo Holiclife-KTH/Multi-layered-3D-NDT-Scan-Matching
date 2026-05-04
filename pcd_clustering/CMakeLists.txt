@@ -215,6 +215,3 @@ target_link_libraries(clustering ${catkin_LIBRARIES} ${PCL_LIBRARIES})
 
 add_executable(clustering_ml src/clustering_ml.cpp)
 target_link_libraries(clustering_ml ${catkin_LIBRARIES} ${PCL_LIBRARIES})
-
-add_executable(slicer src/slicer.cpp)
-target_link_libraries(slicer ${catkin_LIBRARIES} ${PCL_LIBRARIES})
