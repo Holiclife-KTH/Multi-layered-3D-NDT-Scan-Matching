@@ -20,3 +20,19 @@ Standard 3D NDT localization often assumes a static environment, which fails in 
 |SLAM & Mapping|LIO-SAM|
 |Simulation|NVIDIA Omniverse Isaac Sim|
 |Preprocessing|CloudCompare|
+
+
+## Citation
+```
+@Article{sensors23052671,
+AUTHOR = {Kim, Taeho and Jeon, Haneul and Lee, Donghun},
+TITLE = {A Multi-Layered 3D NDT Scan-Matching Method for Robust Localization in Logistics Warehouse Environments},
+JOURNAL = {Sensors},
+VOLUME = {23},
+YEAR = {2023},
+NUMBER = {5},
+ARTICLE-NUMBER = {2671},
+URL = {https://www.mdpi.com/1424-8220/23/5/2671},
+DOI = {10.3390/s23052671}
+}
+```
